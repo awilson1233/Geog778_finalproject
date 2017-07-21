@@ -1,11 +1,46 @@
 // function main() {
 var map = L.map('map', {
-    center: L.latLng(6.770, 29.7070),
+    center: L.latLng(7.260, 29.7070),
     zoom: 7
 });
 
-var basemap = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-	attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
+	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
+	subdomains: 'abcd',
+	maxZoom: 19
 });
 
 basemap.addTo(map);
+
+var admin1Style = {
+			fillColor: "#E3E3E3",
+			weight: 5,
+			opacity: 0.4,
+			color: 'gray',
+			fillOpacity: 0.3
+		};
+
+var admin2Style = {
+			fillColor: "#E3E3E3",
+			weight: 2,
+			opacity: 0.4,
+			color: 'gray',
+			fillOpacity: 0.3
+		};
+//call in country boundary layers, do this first so the other layers are placed on top
+  $.ajax("data/admin1.geojson", {
+       dataType: "json",
+       success: function(response){
+            //create a Leaflet GeoJSON layer and add it to the map
+           L.geoJson(response, {style: admin1Style}).addTo(map);
+
+        }
+    });
+   $.ajax("data/admin2.geojson", {
+        dataType: "json",
+        success: function(response){
+            //create a Leaflet GeoJSON layer and add it to the map
+            L.geoJson(response, {style: admin2Style}).addTo(map);
+
+        }
+    });
