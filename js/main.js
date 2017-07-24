@@ -4,10 +4,11 @@ var map = L.map('map', {
     zoom: 7
 });
 
+console.log(map)
+
 var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
 	subdomains: 'abcd',
-	maxZoom: 19
 });
 
 basemap.addTo(map);
@@ -27,6 +28,13 @@ var admin2Style = {
 			color: 'gray',
 			fillOpacity: 0.3
 		};
+
+// var humanitarianAssistanceStyle = {
+//         switch (feature.properties.HA2) {
+//             case '1': return {color: "#ff0000"};
+//             case '0':   return {color: "#0000ff"};
+        // }
+
 //call in country boundary layers, do this first so the other layers are placed on top
 var admin0 = $.ajax("data/admin0.geojson", {
        dataType: "json",
@@ -67,7 +75,14 @@ var humanitarianAssistance = $.ajax("data/humanitarianAssistance.geojson", {
         dataType: "json",
         success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(response).addTo(map);
+            L.geoJson(response, {
+                style: function(feature) {
+                    switch (feature.properties.HA2) {
+                        case '1': return {color: "#ff0000"};
+                        case '0':   return {color: "#999"};
+                    }
+                  }
+                }).addTo(map);
 
         }
     });
@@ -89,8 +104,19 @@ var livelihoodZones = $.ajax("data/livelihoodzones.geojson", {
 
         }
     });
-var layerToggle = {'South Sudan Boundary': admin0, 'States': admin1, 'Counties': admin2, 'Disputed Areas': disputedAreas, 'Humanitarian Assistance': humanitarianAssistance, 'Food Security': foodSecurity, 'Livelihood Zones': livelihoodZones};
+var layerToggle = {
+  'South Sudan Boundary': admin0,
+  'States': admin1,
+  'Counties': admin2,
+  'Disputed Areas': disputedAreas,
+  'Humanitarian Assistance': humanitarianAssistance,
+  'Food Security': foodSecurity,
+  'Livelihood Zones': livelihoodZones
+};
 
+console.log(layerToggle)
 
 //This adds the layer control to your map.
-L.control.layers(layerToggle).addTo(map);
+L.control(layerToggle).addTo(map);
+
+console.log(layerToggle, map)
