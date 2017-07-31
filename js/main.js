@@ -77,6 +77,29 @@ function humanitarianAssistanceStyle(feature) {
 
 
 function livelihoodZonesColor(z) {
+    return z == 'Highland forest and sorghum'  ? '#5C1010' :
+           z == 'Western groundnuts, sesame and sorghum'  ? '#FF0000' :
+           z == 'Eastern semi-arid pastoral'  ? '#FF8000' :
+           z == 'Eastern plains sorghum and cattle'  ? '#FFFF33' :
+           z == 'Greater Bahr el Ghazal sorghum and cattle'  ? '#E5FFCC' :
+           z == 'Nile basin fishing and agro-pastoral'  ? '#E5FFCC' :
+           z == 'Oil resources, maize and cattle'  ? '#E5FFCC' :
+           z == 'Northeastern maize and cattle'  ? '#E5FFCC' :
+           z == 'Northern sorhgum and livestock'  ? '#E5FFCC' :
+                        '#FFEDA0';
+}
+
+function livelihoodZonesStyle(feature) {
+    return {
+        fillColor: livelihoodZonesColor(feature.properties.LZNAMEEN),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        // dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
+
 var stripes = new L.StripePattern({ fillPattern: stripes, fillOpacity: 1.0});
 
 
