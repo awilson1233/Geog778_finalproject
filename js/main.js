@@ -75,6 +75,8 @@ function humanitarianAssistanceStyle(feature) {
     };
 }
 
+
+function livelihoodZonesColor(z) {
 var stripes = new L.StripePattern({ fillPattern: stripes, fillOpacity: 1.0});
 
 
@@ -134,14 +136,14 @@ var humanitarianAssistance = $.ajax("data/humanitarianAssistance2.geojson", {
     //     }
     // });
 
-// var livelihoodZones = $.ajax("data/livelihoodzones.geojson", {
-//         dataType: "json",
-//         success: function(response){
-//             //create a Leaflet GeoJSON layer and add it to the map
-//             L.geoJson(response).addTo(map);
-//
-//         }
-//     });
+var livelihoodZones = $.ajax("data/livelihoodzones.geojson", {
+        dataType: "json",
+        success: function(response){
+            //create a Leaflet GeoJSON layer and add it to the map
+            L.geoJson(response, {style: livelihoodZonesStyle}).addTo(map);
+
+        }
+    });
 // var layerToggle = {
 //   'South Sudan Boundary': admin0,
 //   'States': admin1,
