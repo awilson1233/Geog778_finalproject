@@ -4,7 +4,6 @@ var map = L.map('map', {
     zoom: 7
 });
 
-console.log(map)
 
 var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', {
 	attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>',
@@ -77,15 +76,15 @@ function humanitarianAssistanceStyle(feature) {
 
 
 function livelihoodZonesColor(z) {
-    return z == 'Highland forest and sorghum'  ? '#5C1010' :
-           z == 'Western groundnuts, sesame and sorghum'  ? '#FF0000' :
-           z == 'Eastern semi-arid pastoral'  ? '#FF8000' :
-           z == 'Eastern plains sorghum and cattle'  ? '#FFFF33' :
-           z == 'Greater Bahr el Ghazal sorghum and cattle'  ? '#E5FFCC' :
-           z == 'Nile basin fishing and agro-pastoral'  ? '#E5FFCC' :
-           z == 'Oil resources, maize and cattle'  ? '#E5FFCC' :
-           z == 'Northeastern maize and cattle'  ? '#E5FFCC' :
-           z == 'Northern sorhgum and livestock'  ? '#E5FFCC' :
+    return z == 'Highland forest and sorghum'  ? '#A63A50' :
+           z == 'Western groundnuts, sesame and sorghum'  ? '#ABC4AB' :
+           z == 'Eastern semi-arid pastoral'  ? '#63535B' :
+           z == 'Eastern plains sorghum and cattle'  ? '#A39171' :
+           z == 'Greater Bahr el Ghazal sorghum and cattle'  ? '#27474E' :
+           z == 'Nile basin fishing and agro-pastoral'  ? '#2978A0' :
+           z == 'Oil resources, maize and cattle'  ? '#F2CD5D' :
+           z == 'Northeastern maize and cattle'  ? '#FC9E4F' :
+           z == 'Northern sorhgum and livestock'  ? '#C2AFF0' :
                         '#FFEDA0';
 }
 
@@ -100,7 +99,7 @@ function livelihoodZonesStyle(feature) {
     };
 }
 
-var stripes = new L.StripePattern({ fillPattern: stripes, fillOpacity: 1.0});
+// var stripes = new L.StripePattern({ fillPattern: stripes, fillOpacity: 1.0});
 
 
 //call in country boundary layers, do this first so the other layers are placed on top
@@ -133,53 +132,101 @@ var admin2 = $.ajax("data/admin2.geojson", {
 var disputedAreas = $.ajax("data/disputedareas.geojson", {
         dataType: "json",
         success: function(response){
-          console.log(response);
             //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(response, {style: stripes}).addTo(map);
-            console.log(stripes);
+            L.geoJson(response, {style: disputedAreasStyle}).addTo(map);
         }
     });
 
 var humanitarianAssistance = $.ajax("data/humanitarianAssistance2.geojson", {
         dataType: "json",
         success: function(response){
-          console.log(response);
             //create a Leaflet GeoJSON layer and add it to the map
             L.geoJson(response, {style: humanitarianAssistanceStyle}).addTo(map);
 
         }
     });
 
-// var foodSecurity = $.ajax("data/foodSecurity.geojson", {
-//         dataType: "json",
-//         success: function(response){
-//             //create a Leaflet GeoJSON layer and add it to the map
-    //         L.geoJson(response, {style: foodSecurityStyle}).addTo(map);
-    //
-    //     }
-    // });
+function onEachFeatureFoodSecurity(feature, layer) {
 
-var livelihoodZones = $.ajax("data/livelihoodzones.geojson", {
+	//no property named popupContent; instead, create html string with all properties
+	var popupContent = ('<b>Food Security Status: </b>' + feature.properties.ML2)
+
+		layer.bindPopup(popupContent);
+
+};
+var foodSecurity = $.ajax("data/foodSecurity.geojson", {
         dataType: "json",
         success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(response, {style: livelihoodZonesStyle}).addTo(map);
+            L.geoJson(response, {
+              onEachFeature: onEachFeatureFoodSecurity,
+              style: foodSecurityStyle}).addTo(map);
 
         }
     });
-// var layerToggle = {
-//   'South Sudan Boundary': admin0,
-//   'States': admin1,
-//   'Counties': admin2,
-//   'Disputed Areas': disputedAreas,
-// 'Humanitarian Assistance': humanitarianAssistance,
-// 'Food Security': foodSecurity,
-// 'Livelihood Zones': livelihoodZones
+
+function onEachFeatureLivelihoodZones(feature, layer) {
+
+	//no property named popupContent; instead, create html string with all properties
+	var popupContent = ('<b>Livelihood Zone: </b>' + feature.properties.LZNAMEEN)
+
+		layer.bindPopup(popupContent);
+
+};
+
+var livelihoodZones = $.ajax("data/livelihoodzones.geojson", {
+        dataType: "json",
+        success: function(response, layer){
+            //create a Leaflet GeoJSON layer and add it to the map
+            L.geoJson(response, {
+              onEachFeature: onEachFeatureLivelihoodZones,
+              style: livelihoodZonesStyle}).addTo(map);
+
+        }
+    });
+
+
+var toggle = {
+  'South Sudan Boundary': admin0,
+  'States': admin1,
+  'Counties': admin2,
+  'Disputed Areas': disputedAreas,
+  'Humanitarian Assistance': humanitarianAssistance,
+  'Food Security': foodSecurity,
+  'Livelihood Zones': livelihoodZones
+};
+
+// This adds the layer control to your map.
+L.control.layers(toggle).addTo(map);
+
+
+// var foodSecurityLegend = L.control({position: 'bottomright'});
+// var livelihoodZonesLegend = L.control({position: 'bottomright'});
+//
+// foodSecurityLegend.onAdd = function (map) {
+// var div = L.DomUtil.create('div', 'info legend');
+//     div.innerHTML +=
+//     '<img src="legend.png" alt="legend" width="134" height="147">';
+// return div;
 // };
 //
-// console.log(layerToggle)
-
-//This adds the layer control to your map.
-// L.control.layers(layerToggle).addTo(map);
-
-// console.log(layerToggle, map)
+// livelihoodZonesLegend.onAdd = function (map) {
+// var div = L.DomUtil.create('div', 'info legend');
+//     div.innerHTML +=
+//     '<img src="change_legend.png" alt="legend" width="134" height="147">';
+// return div;
+// };
+//
+// // Add this one (only) for now, as the Population layer is on by default
+// foodSecurityLegend.addTo(map);
+//
+// map.on('overlayadd', function (eventLayer) {
+//     // Switch to the Population legend...
+//     if (eventLayer.name === 'Food Security') {
+//         this.removeControl(livelihoodZonesLegend);
+//         foodSecurityLegend.addTo(this);
+//     } else { // Or switch to the Population Change legend...
+//         this.removeControl(foodSecurityLegend);
+//         livelihoodZonesLegend.addTo(this);
+//     }
+// });
