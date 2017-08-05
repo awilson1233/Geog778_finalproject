@@ -10,6 +10,9 @@ var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y
 	subdomains: 'abcd',
 });
 
+
+var controlLayers = L.control.layers().addTo(map);
+
 basemap.addTo(map);
 
 var admin1Style = {
@@ -103,45 +106,52 @@ function livelihoodZonesStyle(feature) {
 
 
 //call in country boundary layers, do this first so the other layers are placed on top
-var admin0 = $.ajax("data/admin0.geojson", {
+$.ajax("data/admin0.geojson", {
        dataType: "json",
        success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
-           L.geoJson(response, {style: admin1Style}).addTo(map);
+           var admin0 = L.geoJson(response, {style: admin1Style}).addTo(map);
+           controlLayers.addOverlay(admin0, 'South Sudan Boundary');
 
         }
     });
 
-var admin1 = $.ajax("data/admin1.geojson", {
+$.ajax("data/admin1.geojson", {
        dataType: "json",
        success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
-           L.geoJson(response, {style: admin1Style}).addTo(map);
-
-        }
-    });
-var admin2 = $.ajax("data/admin2.geojson", {
-        dataType: "json",
-        success: function(response){
-            //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(response, {style: admin2Style}).addTo(map);
+           var admin1 = L.geoJson(response, {style: admin1Style}).addTo(map);
+           controlLayers.addOverlay(admin1, 'States Boundary');
 
         }
     });
 
-var disputedAreas = $.ajax("data/disputedareas.geojson", {
+$.ajax("data/admin2.geojson", {
         dataType: "json",
         success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(response, {style: disputedAreasStyle}).addTo(map);
+            var admin2 = L.geoJson(response, {style: admin2Style}).addTo(map);
+            controlLayers.addOverlay(admin2, 'County Boundary');
+
         }
     });
 
-var humanitarianAssistance = $.ajax("data/humanitarianAssistance2.geojson", {
+$.ajax("data/disputedareas.geojson", {
         dataType: "json",
         success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(response, {style: humanitarianAssistanceStyle}).addTo(map);
+            var disputedAreas = L.geoJson(response, {style: disputedAreasStyle});
+            controlLayers.addOverlay(disputedAreas, 'Disputed Areas');
+
+        }
+    });
+
+$.ajax("data/humanitarianAssistance2.geojson", {
+        dataType: "json",
+        success: function(response){
+            //create a Leaflet GeoJSON layer and add it to the map
+            var humanitarianAssistance = L.geoJson(response, {style: humanitarianAssistanceStyle});
+            controlLayers.addOverlay(humanitarianAssistance, 'Humanitarian Assistance');
 
         }
     });
@@ -154,13 +164,14 @@ function onEachFeatureFoodSecurity(feature, layer) {
 		layer.bindPopup(popupContent);
 
 };
-var foodSecurity = $.ajax("data/foodSecurity.geojson", {
+$.ajax("data/foodSecurity.geojson", {
         dataType: "json",
         success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(response, {
+            var foodSecurity = L.geoJson(response, {
               onEachFeature: onEachFeatureFoodSecurity,
-              style: foodSecurityStyle}).addTo(map);
+              style: foodSecurityStyle});
+              controlLayers.addOverlay(foodSecurity, 'Food Security Status');
 
         }
     });
@@ -174,30 +185,18 @@ function onEachFeatureLivelihoodZones(feature, layer) {
 
 };
 
-var livelihoodZones = $.ajax("data/livelihoodzones.geojson", {
+$.ajax("data/livelihoodzones.geojson", {
         dataType: "json",
         success: function(response, layer){
             //create a Leaflet GeoJSON layer and add it to the map
-            L.geoJson(response, {
+            var livelihoodZones = L.geoJson(response, {
               onEachFeature: onEachFeatureLivelihoodZones,
-              style: livelihoodZonesStyle}).addTo(map);
+              style: livelihoodZonesStyle});
+              controlLayers.addOverlay(livelihoodZones, 'Livelihood Zones');
 
         }
     });
 
-
-var toggle = {
-  'South Sudan Boundary': admin0,
-  'States': admin1,
-  'Counties': admin2,
-  'Disputed Areas': disputedAreas,
-  'Humanitarian Assistance': humanitarianAssistance,
-  'Food Security': foodSecurity,
-  'Livelihood Zones': livelihoodZones
-};
-
-// This adds the layer control to your map.
-L.control.layers(toggle).addTo(map);
 
 
 // var foodSecurityLegend = L.control({position: 'bottomright'});
