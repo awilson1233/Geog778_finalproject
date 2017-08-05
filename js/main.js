@@ -199,33 +199,41 @@ $.ajax("data/livelihoodzones.geojson", {
 
 
 
-// var foodSecurityLegend = L.control({position: 'bottomright'});
-// var livelihoodZonesLegend = L.control({position: 'bottomright'});
-//
-// foodSecurityLegend.onAdd = function (map) {
-// var div = L.DomUtil.create('div', 'info legend');
-//     div.innerHTML +=
-//     '<img src="legend.png" alt="legend" width="134" height="147">';
-// return div;
-// };
-//
-// livelihoodZonesLegend.onAdd = function (map) {
-// var div = L.DomUtil.create('div', 'info legend');
-//     div.innerHTML +=
-//     '<img src="change_legend.png" alt="legend" width="134" height="147">';
-// return div;
-// };
-//
-// // Add this one (only) for now, as the Population layer is on by default
+var foodSecurityLegend = L.control({position: 'bottomleft'});
+var livelihoodZonesLegend = L.control({position: 'bottomleft'});
+
+foodSecurityLegend.onAdd = function (map) {
+var div = L.DomUtil.create('div', 'info legend');
+    div.innerHTML +=
+    '<img src="legend.png" alt="legend" width="134" height="147">';
+return div;
+};
+
+livelihoodZonesLegend.onAdd = function (map) {
+var div = L.DomUtil.create('div', 'info legend');
+    div.innerHTML +=
+    '<img src="change_legend.png" alt="legend" width="235" height="215">';
+return div;
+};
+
+// Add this one (only) for now, as the Population layer is on by default
 // foodSecurityLegend.addTo(map);
-//
-// map.on('overlayadd', function (eventLayer) {
-//     // Switch to the Population legend...
-//     if (eventLayer.name === 'Food Security') {
-//         this.removeControl(livelihoodZonesLegend);
-//         foodSecurityLegend.addTo(this);
-//     } else { // Or switch to the Population Change legend...
-//         this.removeControl(foodSecurityLegend);
-//         livelihoodZonesLegend.addTo(this);
-//     }
-// });
+
+map.on('overlayadd', function (eventLayer) {
+    if (eventLayer.name === 'Food Security') {
+        // this.removeControl(livelihoodZonesLegend);
+        foodSecurityLegend.addTo(this);
+    } else {
+        this.removeControl(foodSecurityLegend);
+        livelihoodZonesLegend.addTo(this);
+    }
+});
+
+map.on('overlayremove', function (eventLayer) {
+    // Switch to the Population legend...
+    if (eventLayer.name === 'Food Security') {
+        this.removeControl(foodSecurityLegend);
+    } else { // Or switch to the Population Change legend...
+        this.removeControl(livelihoodZonesLegend);
+    }
+});
