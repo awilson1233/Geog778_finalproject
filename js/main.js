@@ -120,12 +120,12 @@ function livelihoodZonesStyle(feature) {
 }
 
 function getPopulationColor(Mid_2017_P) {
-    return Mid_2017_P < 66226    ? '#E8EAF6' :
-           Mid_2017_P < 107643   ? '#C5CAE9' :
-           Mid_2017_P < 155562   ? '#9FA8DA' :
-           Mid_2017_P < 219575  ? '#7986CB' :
-           Mid_2017_P < 359855  ? '#5C6BC0' :
-           Mid_2017_P < 558273 ? '#3F51B5' :
+    return Mid_2017_P < 66226    ? '#E3F2FD' :
+           Mid_2017_P < 107643   ? '#90CAF9' :
+           Mid_2017_P < 155562   ? '#42A5F5' :
+           Mid_2017_P < 219575  ? '#1E88E5' :
+           Mid_2017_P < 359855  ? '#1565C0' :
+           Mid_2017_P < 558273 ? '#0D47A1' :
 							'#8B0000';
 }
 
@@ -133,7 +133,7 @@ function populationStyle(feature) {
     return {
         fillColor: getPopulationColor(feature.properties.Mid_2017_P),
         weight: 1.5,
-        opacity: 5,
+        opacity: 80,
         color: 'white',
         //dashArray: '3',
         fillOpacity: 0.7
@@ -191,7 +191,8 @@ $.ajax("data/cities.geojson", {
 function onEachFeatureConflictPoints(feature, layer) {
 
 	//no property named popupContent; instead, create html string with all properties
-	var popupContent = ('<b>Event Type: </b>' + feature.properties.EVENT_TYPE)
+	var popupContent = ('<b>Event Type: </b>' + feature.properties.EVENT_TYPE + '<br><b>Source:</b>'+ feature.properties.SOURCE + '<br><b>Fatalities:</b>'+feature.properties.FATALITIES)
+  '<b>State: </b>' +feature.properties.ADMIN2 + '<br><b>Population: </b>' + feature.properties.Mid_2017_P
 
 		layer.bindPopup(popupContent);
 
