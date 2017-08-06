@@ -168,26 +168,33 @@ $.ajax("data/cities.geojson", {
         }
     });
 
+function onEachFeatureConflictPoints(feature, layer) {
+
+	//no property named popupContent; instead, create html string with all properties
+	var popupContent = ('<b>Event Type: </b>' + feature.properties.EVENT_TYPE)
+
+		layer.bindPopup(popupContent);
+
+};
+
 $.ajax("data/conflictpoints.geojson", {
         dataType: "json",
         success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
+            var markers = L.markerClusterGroup();
             var conflictPoints = L.geoJson(response, {
+                onEachFeature: onEachFeatureConflictPoints,
                   pointToLayer: function (feature, latlng) {
                       return L.circleMarker(latlng, conflictPointsStyle);
                       }
-                    }).addTo(map);
-            controlLayers.addOverlay(conflictPoints, 'Conflict Points');
 
-            var markers = new L.MarkerClusterGroup();
-
-            markers.addLayer(L.marker("data/conflictPoints.geojson"));
-            // add more markers here...
+                });
+            markers.addLayer(conflictPoints);
 
             map.addLayer(markers);
+            map.fitBounds(markers.getBounds());
 
-            markers.on('clusterclick', function (a) { alert('Cluster Clicked'); });
-            markers.on('click', function (a) { alert('Marker Clicked'); });
+            controlLayers.addOverlay(conflictPoints, 'Conflict Points');
 
         }
     });
