@@ -39,6 +39,23 @@ var disputedAreasStyle = {
 			fillOpacity: 0.3
 		};
 
+var citiesStyle = {
+    radius: 5,
+    fillColor: "#000",
+    color: "#000",
+    weight: 1,
+    opacity: 100,
+    fillOpacity: 100
+};
+
+var conflictPointsStyle = {
+    radius: 5,
+    fillColor: "#006400",
+    color: "#000",
+    weight: 1,
+    opacity: 100,
+    fillOpacity: 100
+};
 
 function foodSecurityColor(d) {
     return d == 5  ? '#5C1010' :
@@ -136,6 +153,35 @@ $.ajax("data/admin2.geojson", {
         }
     });
 
+$.ajax("data/cities.geojson", {
+        dataType: "json",
+        success: function(response){
+            //create a Leaflet GeoJSON layer and add it to the map
+            var cities = L.geoJson(response, {
+                  pointToLayer: function (feature, latlng) {
+                      return L.circleMarker(latlng, citiesStyle);
+                      marker.bindTooltip(feature.properties.NAME).openTooltip();
+                      }
+                    }).addTo(map);
+            controlLayers.addOverlay(cities, 'Major Cities');
+
+        }
+    });
+
+$.ajax("data/conflictpoints.geojson", {
+        dataType: "json",
+        success: function(response){
+            //create a Leaflet GeoJSON layer and add it to the map
+            var conflictPoints = L.geoJson(response, {
+                  pointToLayer: function (feature, latlng) {
+                      return L.circleMarker(latlng, conflictPointsStyle);
+                      }
+                    }).addTo(map);
+            controlLayers.addOverlay(conflictPoints, 'Conflict Points');
+
+        }
+    });
+
 $.ajax("data/disputedareas.geojson", {
         dataType: "json",
         success: function(response){
@@ -145,6 +191,7 @@ $.ajax("data/disputedareas.geojson", {
 
         }
     });
+
 
 $.ajax("data/humanitarianAssistance2.geojson", {
         dataType: "json",
@@ -237,3 +284,13 @@ map.on('overlayremove', function (eventLayer) {
         this.removeControl(livelihoodZonesLegend);
     }
 });
+
+var markers = new L.MarkerClusterGroup();
+
+markers.addLayer(L.marker("data/livelihoodzones.geojson"));
+// add more markers here...
+
+map.addLayer(markers);
+
+markers.on('clusterclick', function (a) { alert('Cluster Clicked'); });
+markers.on('click', function (a) { alert('Marker Clicked'); });
