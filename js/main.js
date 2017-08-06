@@ -179,6 +179,16 @@ $.ajax("data/conflictpoints.geojson", {
                     }).addTo(map);
             controlLayers.addOverlay(conflictPoints, 'Conflict Points');
 
+            var markers = new L.MarkerClusterGroup();
+
+            markers.addLayer(L.marker("data/conflictPoints.geojson"));
+            // add more markers here...
+
+            map.addLayer(markers);
+
+            markers.on('clusterclick', function (a) { alert('Cluster Clicked'); });
+            markers.on('click', function (a) { alert('Marker Clicked'); });
+
         }
     });
 
@@ -284,13 +294,3 @@ map.on('overlayremove', function (eventLayer) {
         this.removeControl(livelihoodZonesLegend);
     }
 });
-
-var markers = new L.MarkerClusterGroup();
-
-markers.addLayer(L.marker("data/livelihoodzones.geojson"));
-// add more markers here...
-
-map.addLayer(markers);
-
-markers.on('clusterclick', function (a) { alert('Cluster Clicked'); });
-markers.on('click', function (a) { alert('Marker Clicked'); });
