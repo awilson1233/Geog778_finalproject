@@ -119,6 +119,26 @@ function livelihoodZonesStyle(feature) {
     };
 }
 
+function getPopulationColor(Mid_2017_P) {
+    return Mid_2017_P < 66226    ? '#E8EAF6' :
+           Mid_2017_P < 107643   ? '#C5CAE9' :
+           Mid_2017_P < 155562   ? '#9FA8DA' :
+           Mid_2017_P < 219575  ? '#7986CB' :
+           Mid_2017_P < 359855  ? '#5C6BC0' :
+           Mid_2017_P < 558273 ? '#3F51B5' :
+							'#8B0000';
+}
+
+function populationStyle(feature) {
+    return {
+        fillColor: getPopulationColor(feature.properties.Mid_2017_P),
+        weight: 1.5,
+        opacity: 5,
+        color: 'white',
+        //dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
 // var stripes = new L.StripePattern({ fillPattern: stripes, fillOpacity: 1.0});
 
 
@@ -160,7 +180,7 @@ $.ajax("data/cities.geojson", {
             var cities = L.geoJson(response, {
                   pointToLayer: function (feature, latlng) {
                       return L.circleMarker(latlng, citiesStyle);
-                      marker.bindTooltip(feature.properties.NAME).openTooltip();
+                      circleMarker.bindLabel(feature.properties.NAME, { noHide: true });
                       }
                     }).addTo(map);
             controlLayers.addOverlay(cities, 'Major Cities');
@@ -209,6 +229,26 @@ $.ajax("data/disputedareas.geojson", {
         }
     });
 
+function onEachFeaturePopulation(feature, layer) {
+
+	//no property named popupContent; instead, create html string with all properties
+	var popupContent = ('<b>State: </b>' +feature.properties.ADMIN2 + '<br><b>Population: </b>' + feature.properties.Mid_2017_P)
+
+		layer.bindPopup(popupContent);
+
+};
+
+$.ajax("data/population.geojson", {
+        dataType: "json",
+        success: function(response){
+            //create a Leaflet GeoJSON layer and add it to the map
+            var population = L.geoJson(response, {
+              onEachFeature: onEachFeaturePopulation,
+              style: populationStyle});
+            controlLayers.addOverlay(population, 'Population');
+
+        }
+    });
 
 $.ajax("data/humanitarianAssistance2.geojson", {
         dataType: "json",
