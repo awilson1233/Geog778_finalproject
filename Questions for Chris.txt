@@ -3,3 +3,5 @@ Questions for Chris
 -Embed map into website
 -Add static labels to cities
 -Make marker clusters appear only when conflict points layer is turned on
+-d3 graph
+-resize element on html webpage

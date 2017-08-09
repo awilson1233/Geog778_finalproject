@@ -173,14 +173,22 @@ $.ajax("data/admin2.geojson", {
         }
     });
 
+// function onEachFeatureCities(feature, layer) {
+//
+// 	//no property named popupContent; instead, create html string with all properties
+// 	var popupContent = (feature.properties.NAME)
+//
+// 		layer.bindLabel(popupContent)
+//   };
+
 $.ajax("data/cities.geojson", {
         dataType: "json",
         success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
             var cities = L.geoJson(response, {
                   pointToLayer: function (feature, latlng) {
-                      return L.circleMarker(latlng, citiesStyle);
-                      circleMarker.bindLabel(feature.properties.NAME, { noHide: true });
+                      label = String(feature.properties.NAME)
+                      return new L.CircleMarker(latlng, citiesStyle).bindTooltip(label, { permanent: true }).openTooltip();
                       }
                     }).addTo(map);
             controlLayers.addOverlay(cities, 'Major Cities');
@@ -191,18 +199,20 @@ $.ajax("data/cities.geojson", {
 function onEachFeatureConflictPoints(feature, layer) {
 
 	//no property named popupContent; instead, create html string with all properties
-	var popupContent = ('<b>Event Type: </b>' + feature.properties.EVENT_TYPE + '<br><b>Source:</b>'+ feature.properties.SOURCE + '<br><b>Fatalities:</b>'+feature.properties.FATALITIES)
+	var popupContent = ('<b>Event Type: </b>' + feature.properties.EVENT_TYPE + '<br><b>Source: </b>'+ feature.properties.SOURCE + '<br><b>Fatalities: </b>'+feature.properties.FATALITIES)
   '<b>State: </b>' +feature.properties.ADMIN2 + '<br><b>Population: </b>' + feature.properties.Mid_2017_P
 
 		layer.bindPopup(popupContent);
 
 };
 
+var markers = L.markerClusterGroup();
+
 $.ajax("data/conflictpoints.geojson", {
         dataType: "json",
         success: function(response){
             //create a Leaflet GeoJSON layer and add it to the map
-            var markers = L.markerClusterGroup();
+
             var conflictPoints = L.geoJson(response, {
                 onEachFeature: onEachFeatureConflictPoints,
                   pointToLayer: function (feature, latlng) {
@@ -212,10 +222,10 @@ $.ajax("data/conflictpoints.geojson", {
                 });
             markers.addLayer(conflictPoints);
 
-            map.addLayer(markers);
-            map.fitBounds(markers.getBounds());
+            // map.addLayer(markers);
+            // map.fitBounds(markers.getBounds());
 
-            controlLayers.addOverlay(conflictPoints, 'Conflict Points');
+            controlLayers.addOverlay(markers, 'Conflict Points');
 
         }
     });
@@ -325,8 +335,8 @@ return div;
 // foodSecurityLegend.addTo(map);
 
 map.on('overlayadd', function (eventLayer) {
-    if (eventLayer.name === 'Food Security') {
-        // this.removeControl(livelihoodZonesLegend);
+    if (eventLayer.name === 'Food Security Status') {
+        this.removeControl(livelihoodZonesLegend);
         foodSecurityLegend.addTo(this);
     } else {
         this.removeControl(foodSecurityLegend);
@@ -336,9 +346,10 @@ map.on('overlayadd', function (eventLayer) {
 
 map.on('overlayremove', function (eventLayer) {
     // Switch to the Population legend...
-    if (eventLayer.name === 'Food Security') {
+    if (eventLayer.name === 'Food Security Status') {
         this.removeControl(foodSecurityLegend);
     } else { // Or switch to the Population Change legend...
         this.removeControl(livelihoodZonesLegend);
     }
+
 });
